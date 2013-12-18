@@ -33,7 +33,7 @@
     <!-- Create the distribution directory -->
 
     <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
-    <jar jarfile="${dist}/JavaMediaHasher-${DSTAMP}.jar" basedir="${build}">
+    <jar jarfile="${dist}/JavaMediaHasher.jar" basedir="${build}">
 	<zipgroupfileset dir="libs" includes="sc-bzip2-1.47.0.2.jar" />
 	<zipgroupfileset dir="libs" includes="sc-light-jdk15on-1.47.0.2.jar" />
 	<zipgroupfileset dir="libs" includes="scpg-jdk15on-1.47.0.2.jar" />
