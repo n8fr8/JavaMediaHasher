@@ -1,0 +1,54 @@
+<project name="JavaMediaHasher" default="dist" basedir=".">
+    <description>
+	portable cryptographic hashing for media objects
+    </description>
+  <!-- set global properties for this build -->
+  <property name="src" location="src"/>
+  <property name="build" location="build"/>
+  <property name="dist"  location="dist"/>
+
+  <target name="init">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${build}"/>
+  </target>
+
+  <target name="compile" depends="init"
+        description="compile the source " >
+    <!-- Compile the java code from ${src} into ${build} -->
+    <javac srcdir="${src}" destdir="${build}">
+    <classpath>
+        <pathelement path="libs/sc-bzip2-1.47.0.2.jar"/>
+        <pathelement path="libs/sc-light-jdk15on-1.47.0.2.jar"/>
+        <pathelement path="libs/scpg-jdk15on-1.47.0.2.jar"/>
+        <pathelement path="libs/scprov-jdk15on-1.47.0.2.jar"/>
+
+    </classpath>
+	</javac>
+  </target>
+
+  <target name="dist" depends="compile"
+        description="generate the distribution" >
+    <!-- Create the distribution directory -->
+
+    <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
+    <jar jarfile="${dist}/JavaMediaHasher-${DSTAMP}.jar" basedir="${build}">
+	<zipgroupfileset dir="libs" includes="sc-bzip2-1.47.0.2.jar" />
+	<zipgroupfileset dir="libs" includes="sc-light-jdk15on-1.47.0.2.jar" />
+	<zipgroupfileset dir="libs" includes="scpg-jdk15on-1.47.0.2.jar" />
+	<zipgroupfileset dir="libs" includes="scprov-jdk15on-1.47.0.2.jar" />
+    	<manifest>
+        <attribute name="DependencyFinder" value="main"/>
+        <attribute name="Main-Class" value="MediaHasher"/>
+    	</manifest>
+	</jar>
+  </target>
+
+  <target name="clean"
+        description="clean up" >
+    <!-- Delete the ${build} and ${dist} directory trees -->
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+  </target>
+</project>
