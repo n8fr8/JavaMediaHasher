@@ -21,15 +21,15 @@ import de.matthiasmann.jpegdecoder.JPEGDecoder;
 public class MediaHasher 
 {
 	private final static int BYTE_READ_SIZE = 8192;
-
+	private final static String HASH_ALGORITHM = "SHA-1";
+	
 	public static void main (String[] args) throws Exception
 	{
 		File inputFile = new File(args[0]);
 		//String hash = MediaHasher.getBitmapHash(new FileInputStream(inputFile));
 		String hash = MediaHasher.getJpegHash(new FileInputStream(inputFile));
 		
-		System.out.println("got inputfile: " + args[0]);
-		System.out.println("pixel hash=" + hash);
+		System.out.println(hash);
 	}
 	
 	public static String hash (File file, String hashFunction)  throws IOException, NoSuchAlgorithmException
@@ -69,7 +69,6 @@ public class MediaHasher
 	
 	public static String getJpegHash(InputStream is) throws NoSuchAlgorithmException, IOException {
 		
-		
 		JPEGDecoder decoder = new JPEGDecoder(is);
 	    decoder.decodeHeader();
 	    int width = decoder.getImageWidth();
@@ -78,16 +77,11 @@ public class MediaHasher
 	    
 	    int stride = width*4; //4 bytes per pixel RGBA
 	
-	    MessageDigest digester = MessageDigest.getInstance("SHA-1");
-		
-	 //   System.out.println("Stride: " + stride);
-	    
+	    MessageDigest digester = MessageDigest.getInstance(HASH_ALGORITHM);
 		for(int h=0; h<decoder.getNumMCURows(); h++) {
 			
 		    ByteBuffer bb = ByteBuffer.allocate(stride * decoder.getMCURowHeight());
 
-		//	System.out.println("handling row: " + h);
-			
 		    decoder.decodeRGB(bb, stride, 1);
 			
 			digester.update(bb.array());
@@ -105,25 +99,23 @@ public class MediaHasher
 		
 		for(int h=0; h<bitmap.getHeight(); h++) {
 			
-			
-			
 			byte[] rowBytes = new byte[bitmap.getWidth()];
 			
 			for(int b=0; b<rowBytes.length; b++) {
 				int p =  bitmap.getRGB(b, h);;
 				rowBytes[b] = (byte)p;
 				
+				/*
 				int R = (p >> 16) & 0xff;
 				int G = (p >> 8) & 0xff;
 				int B = p & 0xff;
 				
 				if (b == 0)
 				System.out.println("row " + h + ": " + R +"," + G + "," + B);
+				*/
 			}
 			
 			digester.update(rowBytes);
-			//byte[] messageDigest = digester.digest();
-			//String lineHash = new String(Hex.encode(messageDigest), Charset.forName("UTF-8"));
 			
 			rowBytes = null;
 			
@@ -133,48 +125,6 @@ public class MediaHasher
 		return new String(Hex.encode(messageDigest), Charset.forName("UTF-8"));
 	}
 	
-	/*
-	public static String getBitmapHash(java.io.File file) throws NoSuchAlgorithmException, IOException {
-		Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-		String hash = "";
-		ByteBuffer buf;
-		
-		buf = ByteBuffer.allocate(bitmap.getRowBytes() * bitmap.getHeight());
-		
-		bitmap.copyPixelsToBuffer(buf);
-		hash = MediaHasher.hash(buf.array(), "MD5");
-		buf.clear();
-		buf = null;
-		return hash;
-	}
 	
-	public static String getBitmapHash(info.guardianproject.iocipher.FileInputStream fis) throws NoSuchAlgorithmException, IOException {
-		Bitmap bitmap = BitmapFactory.decodeStream(fis);
-		String hash = "";
-		ByteBuffer buf;
-		
-		buf = ByteBuffer.allocate(bitmap.getRowBytes() * bitmap.getHeight());
-		
-		bitmap.copyPixelsToBuffer(buf);
-		hash = MediaHasher.hash(buf.array(), "MD5");
-		buf.clear();
-		buf = null;
-		return hash;
-	}
-	
-	public static String getBitmapHash(java.io.FileInputStream fis) throws NoSuchAlgorithmException, IOException {
-		Bitmap bitmap = BitmapFactory.decodeStream(fis);
-		String hash = "";
-		ByteBuffer buf;
-		
-		buf = ByteBuffer.allocate(bitmap.getRowBytes() * bitmap.getHeight());
-		
-		bitmap.copyPixelsToBuffer(buf);
-		hash = MediaHasher.hash(buf.array(), "MD5");
-		buf.clear();
-		buf = null;
-		return hash;
-	}
-	*/
 	
 }
